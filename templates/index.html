@@ -1,0 +1,60 @@
+$def with (data)
+
+<!DOCTYPE html PUBLIC “-//W3C//DTD XHTML 1.0 Strict//EN” “http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd”>
+<html xmlns=”http://www.w3.org/1999/xhtml”>
+<head>
+    <meta http-equiv=”Content-Type” content=”text/html; charset=utf-8″ />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日新闻摘选</title>
+    <link rel="stylesheet" type="text/css" href="./css/frame.css">
+    <script type="text/javascript">
+        function fetchNewsContent() {
+            var selectObj = document.getElementById("select");
+            var targetLink = selectObj.options.item(selectObj.selectedIndex).value;
+            var request = new XMLHttpRequest();
+            request.onreadystatechange = function() {
+                if (request.readyState === 4) {
+                    if (request.status === 200 || request.status === 304) {
+                        //console.log(request.responseText);
+                        var content = document.createElement("html");
+                        content.innerHTML = request.responseText;
+                        //console.log(content);
+                        var newsHtml = content.getElementsByTagName("div")[0].innerHTML;
+                        //console.log(newsHtml);
+                        document.getElementById("embbed_div").innerHTML = newsHtml;
+                    }
+                }
+            }
+            request.open("GET", targetLink);
+            request.send();
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+<div class="header">
+    <h1>每日新闻摘选</h1>
+</div>
+<div class="content">
+    <div class="sidebar">
+        <select id="select" onchange="fetchNewsContent()">
+            $for file in data['file_list']
+            <option value="$file['link']">$file['name']</option>
+        </select>
+        <script type="text/javascript">
+            document.getElementById("select").selectedIndex = 0;
+            fetchNewsContent();
+        </script>
+    </div>
+    <div class="maincontent" id="embbed_div">
+    </div>
+</div>
+
+<div class="footer">
+    <h1></h1>
+</div>
+
+</div>
+</body>
+
+</html>
